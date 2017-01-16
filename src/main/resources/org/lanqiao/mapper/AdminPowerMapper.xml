@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.AdminPowerDao">
+	<!-- 添加管理员账号权限 -->
+	<select id="selectPowerByAdminId" parameterType="int"
+		resultType="int">
+		select powerId from adminpower where adminId=#{adminId}
+	</select>
+
+	<insert id="insertAdminPower" parameterType="List">
+		insert into
+		adminpower(adminId,powerId) values
+		<foreach collection="list" item="e" separator=",">
+		( #{e.adminId} , #{e.powerId} )
+		</foreach>
+	</insert>
+	<delete id="delAdminPowerByAdminId" parameterType="int">
+		delete from
+		adminpower where adminId=#{adminId}
+	</delete>
+</mapper>

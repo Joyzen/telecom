@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.OsLoginDao">
+	<resultMap type="OsLogin" id="OsLoginResultMap">
+		<result property="osLoginId" column="osLoginId"/>
+		<result property="cost" column="cost"/>
+		<result property="loginInTime" column="loginInTime"/>
+		<result property="loginOutTime" column="loginOutTime"/>
+		<association property="os" column="osId" select=
+		"org.lanqiao.dao.OsDao.selectOsById"/>
+	</resultMap>
+	<!-- 根据条件搜索osLogin -->
+	<select id="selectOsLoginByCondition" parameterType="Map"
+		resultMap="OsLoginResultMap">
+		select * from osLogin 
+		<where>
+			<if test="osId!=null and osId!=''">
+				and osId=#{osId}				
+			</if>
+			<if test="customerId!=null and customerId!=''">
+				and osId in
+				(select osId from os where customerId=#{customerId})
+			</if>
+		</where>
+		order by loginOutTime desc
+		<if test="start!=null and rows!=null">
+			limit #{start},#{rows}
+		</if>
+	</select>
+	
+	<insert id="insertOsLogin" parameterType="OsLogin" useGeneratedKeys="true" keyProperty="osLoginId" >
+		insert into os(loginInTime,cost,loginOutTime,osId)
+		values(#{loginInTime},#{cost},#{loginOutTime},#{osId})
+		<!-- 返回插入自增的主键 -->
+		<selectKey keyProperty="osLoginId" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="countOsLogin" parameterType="Map" resultType="int">
+		select count(*) from osLogin 
+		<where>
+			<if test="osId!=null and osId!=''">
+				and osId=#{osId}				
+			</if>
+			<if test="customerId!=null and customerId!=''">
+				and osId in
+				(select osId from os where customerId=#{customerId})
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.CustomerDao">
+	<!-- 根据条件搜索customer -->
+	<select id="selectCustomerByCondition" parameterType="Map"
+		resultType="Customer">
+		select * from customer
+		<where>
+			<if test="customerId!=null and customer!=''">
+				and customerId=#{customerId}
+			</if>
+			<if test="idNumber!=null and idNumber!=''">
+				and idNumber=#{idNumber}
+			</if>
+			<if test="customerName!=null and customerName!=''">
+				and customerName like '%' #{customerName} '%'
+			</if>
+			<if test="customerAccount!=null and customerAccount!=''">
+				and customerAccount=#{customerAccount}
+			</if>
+			<if test="status!=null and status!='' and status!='-1'">
+				and status=#{status}
+			</if>
+		</where>
+		<if test="startPage!=null and pageSize!=null">
+			limit #{startPage},#{pageSize}
+		</if>
+	</select>
+
+	<insert id="insertCustomer" parameterType="Customer">
+		insert into
+		customer(customerId,customerName,idNumber,phone,customerAccount,
+		password,createTime,lastLoginTime,status,pauseTime,delTime,email,sex,job)
+		values(null,#{customerName},#{idNumber},#{phone},#{customerAccount},
+		#{password},#{createTime},#{lastLoginTime},#{status},#{pauseTime},#{delTime},
+		#{email},#{sex},#{job})
+	</insert>
+	<delete id="delCustomer" parameterType="int">
+		delete from customer where
+		customerId=#{customerId}
+	</delete>
+	<update id="updateCustomer" parameterType="Customer">
+		update customer
+		<set>
+			<if test="customerName!=null and customerName!=''">
+				customerName=#{customerName},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="password!=null and password!=''">
+				password=#{password},
+			</if>
+			<if test="email!=null and email!=''">
+				email=#{email},
+			</if>
+			<if test="sex!=null and sex!=''">
+				sex=#{sex},
+			</if>
+			<if test="job!=null and job!=''">
+				job=#{job},
+			</if>
+			<if test="status!=null and status!='' and status!='-1'">
+				status=#{status},
+			</if>
+		</set>
+		where customerId=#{customerId}
+	</update>
+
+	<select id="countCustomer" parameterType="Map"
+		resultType="int">
+		select count(*) from customer
+		<where>
+			<if test="customerId!=null and customer!=''">
+				and customerId=#{customerId}
+			</if>
+			<if test="idNumber!=null and idNumber!=''">
+				and idNumber=#{idNumber}
+			</if>
+			<if test="customerName!=null and customerName!=''">
+				and customerName like '%' #{customerName} '%'
+			</if>
+			<if test="customerAccount!=null and customerAccount!=''">
+				and customerAccount=#{customerAccount}
+			</if>
+			<if test="status!=null and status!='' and status!='-1'">
+				and status=#{status}
+			</if>
+		</where>
+	</select>
+	<select id="selectCustomerByCustomerId" parameterType="int" resultType="Customer">
+		select * from customer where customerId=#{customerId}
+	</select>
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.BussinessDao">
+	<resultMap type="Bussiness" id="BussinessResultMap">
+		<result property="bussinessId" column="bussinessId"/>
+		<result property="createTime" column="createTime"/>
+		<result property="openTime" column="openTime"/>
+		<result property="deletTime" column="deletTime"/>
+		<result property="pauseTime" column="pauseTime"/>
+		<association property="os" column="osId" select=
+		"org.lanqiao.dao.OsDao.selectOsById"/>
+	</resultMap>
+	<!-- 根据条件搜索bussiness -->
+	<select id="selectBussinessByCondition" parameterType="Map"
+		resultMap="BussinessResultMap">
+		select * from bussiness
+		<where>
+			<if test="bussinessId!=null and bussinessId!=''">
+				and bussinessId=#{bussinessId}
+			</if>
+			<if test="idNumber!=null and idNumber!=''">
+				and osId in (select osId from os where customerId=
+				(select customerId from customer where idNumber=#{idNumber}))
+			</if>
+			<if test="osAccount!=null and osAccount!=''">
+				and osId in 
+				(select osId from os where osAccount like '%' #{osAccount} '%')
+			</if>
+			<if test="serverIp!=null and serverIp!=''">
+				and osId in
+				(select osId from os where serverIp=#{serverIp})
+			</if>
+			<if test="status!=null and status!='' and status!='-1'">
+				and osId in
+				(select osId from os where status=#{status})
+			</if>
+		</where>
+		<if test="startPage!=null and pageSize!=null">
+			limit #{startPage},#{pageSize}
+		</if>
+	</select>
+
+	<insert id="insertBussiness" parameterType="Bussiness">
+		insert into
+		bussiness(bussinessId,osId,createTime)
+		values(null,#{osId},CURDATE())
+	</insert>
+	<update id="updateBussiness" parameterType="Bussiness">
+		update bussiness
+		<set>
+			<if test="pauseTime!=null and pauseTime!=''">
+				pauseTime=#{pauseTime}
+			</if>
+			<if test="deletTime!=null and deletTime!=''">
+				deletTime=#{deletTime}
+			</if>
+			<if test="openTime!=null and openTime!=''">
+				openTime=#{openTime}
+			</if>
+		</set>
+		where bussinessId=#{bussinessId}
+	</update>
+	
+
+	<select id="countBussiness" parameterType="Map"
+		resultType="int">
+		select count(*) from bussiness
+		<where>
+			<if test="bussinessId!=null and bussinessId!=''">
+				and bussinessId=#{bussinessId}
+			</if>
+			<if test="idNumber!=null and idNumber!=''">
+				and osId in (select osId from os where customerId=
+				(select customerId from customer where idNumber=#{idNumber}))
+			</if>
+			<if test="osAccount!=null and osAccount!=''">
+				and osId in 
+				(select osId from os where osAccount like '%' #{osAccount} '%')
+			</if>
+			<if test="serverIp!=null and serverIp!=''">
+				and osId in
+				(select osId from os where serverIp=#{serverIp})
+			</if>
+			<if test="status!=null and status!='' and status!='-1'">
+				and osId in
+				(select osId from os where status=#{status})
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.AdminDao">
+		<resultMap type="Admin" id="AdminResultMap">
+			 <id property="adminId" column="adminId" />
+			 <result property="adminAccount" column="adminAccount" />
+			 <result property="password" column="password" />
+			 <result property="adminName" column="adminName" />
+			 <result property="idNumber" column="idNumber" />
+			 <result property="phone" column="phone" />
+			 <result property="email" column="email" />
+			 <result property="createTime" column="createTime" />
+			 <result property="status" column="status" />
+			 <result property="imgURL" column="imgURL"/>
+			 <collection property="powers" column="adminId" select="org.lanqiao.dao.AdminPowerDao.selectPowerByAdminId" />
+		</resultMap>
+	<!-- 根据条件搜索管理员账号 -->
+	<select id="selectAdminByCondition" parameterType="Map"
+		resultMap="AdminResultMap">
+		select * from admin
+		<where>
+			<if test="adminAccount!='' and adminAccount!=null">
+				and adminAccount=#{adminAccount}
+			</if>
+			<if test="password!='' and password!=null">
+				and password=#{password}
+			</if>
+			<if test="adminId!='' and adminId!=null">
+				and adminId=#{adminId}
+			</if>
+			<if test="powerId>=0 and powerId!=null">
+				and adminId in (select adminId from adminpower
+			        where powerId=#{powerId})
+			</if>
+		</where>
+		<if test="startPage!=null and pageSize!=null">
+			limit #{startPage},#{pageSize}
+		</if>
+	</select>
+
+	<insert id="insertAdmin" parameterType="Admin">
+		insert into
+		admin(adminId,adminAccount,password,adminName,
+		idNumber,phone,email,createTime)
+		values(null,#{adminAccount},#{password},#{adminName},#{idNumber},
+		#{phone},#{email},#{createTime})
+	</insert>
+	<delete id="delAdmin" parameterType="int">
+		delete from admin where
+		adminId=#{adminId}
+	</delete>
+	<update id="updateAdmin" parameterType="Admin">
+		update admin
+		<set>
+			<if test="adminAccount!=null and adminAccount!=''">
+				adminAccount=#{adminAccount},
+			</if>
+			<if test="password!=null and password!=''">
+				password=#{password},
+			</if>
+			<if test="adminName!=null and adminName!=''">
+				adminName=#{adminName},
+			</if>
+			<if test="idNumber!=null and idNumber!=''">
+				idNumber=#{idNumber},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				createTime=#{createTime},
+			</if>
+			<if test="email!=null and email!=''">
+				email=#{email},
+			</if>
+			<if test="status!=null and status!=''">
+				status=#{status},
+			</if>
+			<if test="imgURL!=null and imgURL!=''">
+				imgURL=#{imgURL},
+			</if>
+		</set>
+		where adminId=#{adminId}
+	</update>
+
+	<select id="countAdmin" parameterType="Map"
+		resultType="int">
+		select count(*) from admin
+		<where>
+			<if test="adminAccount!='' and adminAccount!=null">
+				and adminAccount=#{adminAccount}
+			</if>
+			<if test="password!='' and password!=null">
+				and password=#{password}
+			</if>
+			<if test="adminId!='' and adminId!=null">
+				and adminId=#{adminId}
+			</if>
+			<if test="powerId>=0 and powerId!=null">
+				and adminId in (select adminId from adminpower where powerId=#{powerId})
+			</if>
+		</where>
+	</select>
+
+</mapper>

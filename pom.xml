@@ -1,0 +1,152 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>cn.zcc1907</groupId>
+  <artifactId>student_file_management_system</artifactId>
+  <packaging>jar</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>student_file_management_system Maven Webapp</name>
+  	<parent>  
+	    <groupId>org.springframework.boot</groupId> 
+	    <artifactId>spring-boot-starter-parent</artifactId>
+	    <version>1.4.0.RELEASE</version>
+	</parent>
+	<properties>  
+	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>  
+		<dependency>
+			<groupId>org.springframework.boot</groupId>   
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+                <!-- <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion> -->
+                <!-- <exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+                </exclusion> -->
+            </exclusions>
+		</dependency>
+		<!-- <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency> -->
+		<dependency>    
+			<groupId>org.springframework.boot</groupId>    
+			<artifactId>spring-boot-starter-test</artifactId>     
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+<!--    devtools可以实现页面热部署（即页面修改后会立即生效，这个可以直接在application.properties文件中配置spring.thymeleaf.cache=false来实现），   
+实现类文件热部署（类文件修改后不会立即生效），实现对属性文件的热部署。    即devtools会监听classpath下的文件变动，并且会立即重启应用（发生在保存时机），注意：因为其采用的虚拟机机制，该项重启是很快的  -->  
+		<dependency>    
+			<groupId>org.springframework.boot</groupId>    
+			<artifactId>spring-boot-devtools</artifactId>    
+			<optional>true</optional>  
+		</dependency>  
+		<!-- mybatis -->  
+		<dependency>    
+			<groupId>org.mybatis.spring.boot</groupId>    
+			<artifactId>mybatis-spring-boot-starter</artifactId>    
+			<version>1.1.1</version>  
+		</dependency>  
+		<!-- 用于停止spring boot 服务 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!-- mybatis 分页插件 -->  
+		<dependency>    
+			<groupId>com.github.pagehelper</groupId>    
+			<artifactId>pagehelper</artifactId>    
+			<version>4.1.6</version>  
+		</dependency>  
+		<!--mysql-->  
+		<dependency>    
+			<groupId>mysql</groupId>    
+			<artifactId>mysql-connector-java</artifactId>  
+		</dependency>  
+		<!--druid-->  
+		<dependency>    
+			<groupId>com.alibaba</groupId>    
+			<artifactId>druid</artifactId>    
+			<version>1.0.27</version>  
+		</dependency>
+		<!-- servlet 依赖. --> 
+		<dependency> 
+			<groupId>javax.servlet</groupId> 
+			<artifactId>javax.servlet-api</artifactId> 
+		</dependency>
+		<dependency> 
+			<groupId>javax.servlet</groupId> 
+			<artifactId>jstl</artifactId> 
+		</dependency>
+		<dependency> 
+			<groupId>org.springframework.boot</groupId> 
+			<artifactId>spring-boot-starter-tomcat</artifactId> 
+		</dependency> 
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId> 
+			<artifactId>tomcat-embed-jasper</artifactId> 
+		</dependency>
+		
+	</dependencies>
+
+	<build>  
+		<finalName>telecom</finalName>  
+		<plugins>    
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin </artifactId>
+				<dependencies>
+					<!--springloaded hot deploy -->
+					<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>springloaded</artifactId>
+						<version>1.2.4.RELEASE</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<classifier>exec</classifier>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>  
+		</plugins>  
+		
+		<resources>    
+			<resource>      
+				<directory>src/main/java</directory>      
+				<includes>        
+					<!-- 我习惯将mybatis的配置xml放在java目录下 -->        
+					<include>**/*.xml</include>      
+				</includes>      
+				<filtering>true</filtering>    
+			</resource>    
+			<resource>      
+		    	<directory>src/main/resources</directory>      
+		    	<includes>        
+					<include>**/*</include>      
+		    	</includes>      
+				<filtering>true</filtering>    
+			</resource>  
+			<resource>      
+		    	<directory>src/main/webapp</directory>      
+		    	<includes>        
+					<include>**/*</include>      
+		    	</includes>      
+				<filtering>true</filtering>    
+			</resource>  
+		</resources>
+	</build>
+</project>

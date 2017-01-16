@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.OsDao">
+	<resultMap type="Os" id="OsResultMap">
+		<result property="osId" column="osId"/>
+		<result property="osAccount" column="osAccount"/>
+		<result property="osPassword" column="osPassword"/>
+		<result property="serverIp" column="serverIp"/>
+		<result property="status" column="status"/>
+		<association property="tariff" column="tariffId" select=
+		"org.lanqiao.dao.TariffDao.selectTariffById"/>
+		<association property="customer" column="customerId" select=
+		"org.lanqiao.dao.CustomerDao.selectCustomerByCustomerId"/>
+	</resultMap>
+	<!-- 根据条件搜索bussiness -->
+	<select id="selectOsById" parameterType="int"
+		resultMap="OsResultMap">
+		select * from os where osId=#{osId}
+	</select>
+	<update id="updateOs" parameterType="Os">
+		update os
+		<set>
+			<if test="status!=null and status!=''">
+				status=#{status},
+			</if>
+			<if test="tariffId>0">
+				tariffId=#{tariffId}
+			</if>
+		</set>
+		where osId=#{osId}
+	</update>
+	
+	<insert id="insertOs" parameterType="Os" useGeneratedKeys="true" keyProperty="osId" >
+		insert into os(customerId,tariffId,osAccount,osPassword,status)
+		values(#{customerId},#{tariffId},#{osAccount},#{osPassword},#{status})
+		<!-- 返回插入自增的主键 -->
+		<selectKey keyProperty="osId" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+</mapper>

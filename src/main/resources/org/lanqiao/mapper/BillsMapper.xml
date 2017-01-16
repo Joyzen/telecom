@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.BillsDao">
+	<resultMap type="Bills" id="BillsResultMap">
+		<result property="billId" column="billId"/>
+		<result property="cost" column="cost"/>
+		<result property="months" column="months"/>
+		<result property="payWay" column="payWay"/>
+		<result property="payStatus" column="payStatus"/>
+		<association property="customer" column="customerId" select=
+		"org.lanqiao.dao.CustomerDao.selectCustomerByCustomerId"/>
+	</resultMap>
+	<!-- 根据条件搜索Bills -->
+	<select id="selectBills" parameterType="Map"
+		resultMap="BillsResultMap">
+		select * from bills
+		<where>
+			<if test="idNumber!=null and idNumber!=''">
+			and customerId in (select customerId from customer where idNumber=#{idNumber})
+			</if>
+			<if test="customerAccount!=null and customerAccount!=''">
+			and customerId in (select customerId from customer where customerAccount=#{customerAccount})
+			</if>
+			<if test="customerName!=null and customerName!=''">
+			and customerId in (select customerId from customer where customerName=#{customerName})
+			</if>
+			<choose>
+				<when test="year!='' and month!=''">
+					and months like #{year} #{month}
+				</when>
+				<when test="year!='' and month==''">
+					and months like #{year} '%'
+				</when>
+				<when test="year=='' and month!=''">
+					and months like '%' #{month}
+				</when>
+			</choose>
+		</where>
+		order by months desc
+		<if test="start!=null and rows!=null">
+			limit #{start},#{rows}
+		</if>
+	</select>
+	
+	<insert id="insertBills" parameterType="Bills" useGeneratedKeys="true" keyProperty="billId" >
+		insert into os(customerId,cost,months,payWay,payStatus)
+		values(#{customerId},#{cost},#{months},#{payWay},#{payStatus})
+		<!-- 返回插入自增的主键 -->
+		<selectKey keyProperty="billId" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="countBills" parameterType="Map" resultType="int">
+		select count(*) from bills
+	</select>
+</mapper>

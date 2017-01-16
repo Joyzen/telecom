@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.BillDetailDao">
+	<resultMap type="BillDetail" id="BillDetailResultMap">
+		<result property="billDetailId" column="billDetailId"/>
+		<result property="cost" column="cost"/>
+		<result property="months" column="months"/>
+		<result property="timeLong" column="timeLong"/>
+		<association property="os" column="osId" select=
+		"org.lanqiao.dao.OsDao.selectOsById"/>
+	</resultMap>
+	<!-- 报表查询数据Map -->
+	<resultMap type="ReportDTO" id="ReportDTO">
+		<result property="customerId" column="customerId"/>
+		<result property="customerAccount" column="customerAccount"/>
+		<result property="customerName" column="customerName"/>
+		<result property="idNumber" column="idNumber"/>
+		<result property="months" column="months"/>
+		<result property="phone" column="phone"/>
+		<result property="timeLong" column="timeLong"/>
+	</resultMap>
+	<!-- 根据条件搜索Bills -->
+	<select id="selectBillDetailByCondition" parameterType="Map"
+		resultMap="BillDetailResultMap">
+		select * from billdetail 
+		<where>
+			<if test="customerId!=null and customerId!=''">
+			and osId in
+			(select osId from os where customerId=#{customerId})
+			</if>
+			<if test="months!=null and months!=''">
+			and months=#{months}
+			</if>
+		</where>
+		<if test="start!=null and rows!=null">
+			limit #{start},#{rows}
+		</if>
+	</select>
+	
+	<insert id="insertBillDetail" parameterType="BillDetail" useGeneratedKeys="true" keyProperty="billDetailId" >
+		insert into os(tariffId,cost,months,osId,timeLong)
+		values(#{tariffId},#{cost},#{months},#{osId},#{timeLong})
+		<!-- 返回插入自增的主键 -->
+		<selectKey keyProperty="billDetailId" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="countBillDetail" parameterType="Map" resultType="int">
+		select count(*) from billdetail 
+		<where>
+			<if test="customerId!=null and customerId!=''">
+			and osId in
+			(select osId from os where customerId=#{customerId})
+			</if>
+		</where>
+		order by months desc
+	</select>
+	<select id="getReport" parameterType="Map" resultMap="ReportDTO">
+		SELECT c.customerId,c.customerAccount,c.customerName,c.idNumber,c.phone,
+		DATE_FORMAT(o.loginOutTime,'%Y年%m月') AS months,
+		(SUM(TIME_TO_SEC(TIMEDIFF(o.loginOutTime,o.loginInTime)))) AS timeLong 
+		FROM oslogin o,os os,customer c WHERE o.osId=os.osId AND os.customerId=c.customerId
+		<if test="customerName!=null and customerName!=''">
+		and customerName=#{customerName}
+		</if>
+		GROUP BY c.customerId
+		<if test="order!='customer'">
+			,DATE_FORMAT(o.loginOutTime,'%Y%m')
+			order by timeLong desc
+		</if>
+		<if test="order=='customer'">
+			order by timeLong desc 
+		</if>
+ 		<if test="start!=null and rows!=null">
+			limit #{start},#{rows}
+		</if>
+	</select>
+	
+	<select id="countReport" parameterType="Map" resultType="int">
+		SELECT COUNT(*) FROM  (SELECT COUNT(*)
+		FROM oslogin o,os os,customer c WHERE o.osId=os.osId AND os.customerId=c.customerId
+ 		GROUP BY c.customerId,DATE_FORMAT(o.loginOutTime,'%Y%m')) a
+	</select>
+	
+	<select id="getTariffRate" parameterType="Map" resultType="TariffRateDTO">
+		SELECT t.`tariffId`,t.`tariffName`,t.`tariffType`,COUNT(o.tariffId) AS times 
+		FROM os o,tariff t
+		WHERE o.`tariffId`=t.`tariffId` GROUP BY o.`tariffId` ORDER BY times DESC
+		<if test="start!=null and rows!=null">
+			limit #{start},#{rows}
+		</if>
+	</select>
+	
+	<select id="countTariffRate" parameterType="Map" resultType="int">
+		SELECT COUNT(*) FROM (SELECT t.`tariffId`,t.`tariffName`,t.`tariffType`,COUNT(o.tariffId) AS times FROM os o,tariff t
+		WHERE o.`tariffId`=t.`tariffId` GROUP BY o.`tariffId`) a
+	</select>
+</mapper>

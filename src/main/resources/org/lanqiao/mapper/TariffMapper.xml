@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>            
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.dao.TariffDao">
+	<!-- 根据条件搜索资费 -->
+	<select id="selectTariffByCondition" parameterType="Map"
+		resultType="Tariff">
+		select * from tariff
+		<where>
+			<if test="tariffName!=null and tariffName!=''">
+				and tariffName=#{tariffName}
+			</if>
+			<if test="status!=null and status!=''">
+				and status=#{status}
+			</if>
+		</where>
+		<choose>
+			<when test="orderBy=='timeLongASC'">
+				order by timeLong ASC
+			</when>
+			<when test="orderBy=='timeLongDESC'">
+				order by timeLong DESC
+			</when>
+			<when test="orderBy=='tariffASC'">
+				order by tariff ASC
+			</when>
+			<when test="orderBy=='tariffDESC'">
+				order by tariff DESC
+			</when>
+			<when test="orderBy=='YuezuASC'">
+				order by timeLong*timeTariff ASC
+			</when>
+			<when test="orderBy=='YuezuDESC'">
+				order by timeLong*timeTariff DESC
+			</when>
+			<otherwise>
+				order by createTime DESC
+			</otherwise>
+		</choose>
+		<if test="startPage!=null and pageSize!=null and pageSize!=null and pageSize!=''">
+			limit #{startPage},#{pageSize}
+		</if>
+	</select>
+
+	<insert id="inserTariff" parameterType="Tariff">
+		insert into
+		tariff(tariffId,tariffName,tariffType,timeLong,tariff,
+		timeTariff,tariffExplain,createTime,status)
+		values(null,#{tariffName},#{tariffType},#{timeLong},#{tariff},
+		#{timeTariff},#{tariffExplain},#{createTime},#{status})
+	</insert>
+	<delete id="delTariff" parameterType="int">
+		delete from tariff where
+		tariffId=#{tariffId}
+	</delete>
+	<update id="updateTariff" parameterType="Tariff">
+		update tariff
+		<set>
+			<if test="tariffName!=null and tariffName!=''">
+				tariffName=#{tariffName},
+			</if>
+			<if test="tariffType!=null and tariffType!=''">
+				tariffType=#{tariffType},
+			</if>
+			<if test="timeLong!=null and timeLong!=''">
+				timeLong=#{timeLong},
+			</if>
+			<if test="tariff!=null and tariff!=''">
+				tariff=#{tariff},
+			</if>
+			<if test="timeTariff!=null and timeTariff!=''">
+				timeTariff=#{timeTariff},
+			</if>
+			<if test="createTime!=null and createTime!=''">
+				createTime=#{createTime},
+			</if>
+			<if test="openTime!=null and openTime!=''">
+				openTime=#{openTime},
+			</if>
+			<if test="tariffExplain!=null and tariffExplain!=''">
+				tariffExplain=#{tariffExplain},
+			</if>
+			<if test="status!=null and status!=''">
+				status=#{status},
+			</if>
+		</set>
+		where tariffId=#{tariffId}
+	</update>
+
+	<select id="countTariff" parameterType="Tariff"
+		resultType="int">
+		select count(*) from tariff
+	</select>
+	<select id="selectTariffById" parameterType="int" resultType="Tariff">
+		select * from tariff where tariffId=#{tariffId}
+	</select>
+</mapper>
